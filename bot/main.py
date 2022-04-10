@@ -114,13 +114,12 @@ async def detectPriceAlert(crypto, priceTargets):
   Timer(5.0, await detectPriceAlert(crypto, priceTargets)).start()
   print("Finished")
 
-
-
 # Creating an instance of the discord client
 client = discord.Client()
 
 @client.event
 async def on_ready():
+  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,name="the Crypto Market!"))
   print(f'You have logged in as {client}')
   channel = discord.utils.get(client.get_all_channels(), name='general')
 
