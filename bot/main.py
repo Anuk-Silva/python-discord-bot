@@ -2,6 +2,9 @@ import discord
 import requests
 from replit import db
 from threading import Timer
+from discord.ext import commands
+
+client = commands.Bot(command_prefix = '!')
 
 # Check whether or not the price targets input by the user are valid integers
 def check(priceTargets):
@@ -115,7 +118,7 @@ async def detectPriceAlert(crypto, priceTargets):
   print("Finished")
 
 # Creating an instance of the discord client
-client = discord.Client()
+#client = discord.Client()
 
 @client.event
 async def on_ready():
@@ -128,15 +131,17 @@ async def on_ready():
 
   await client.get_channel(channel.id).send('The Crypto Bot is now Online!')
 
+@client.command()
+async def clear(ctx, limit:int):
+  await ctx.channel.purge(limit=limit)
+  await ctx.send(f'{limit} messages have been cleared.')
+
 # This is called whenever there is a message put into the chat
 @client.event
 async def on_message(message):
   if message.author == client.user:
     return
 
-  if message.content.startswith('ya'):
-    await message.channel.send('yeet')
-    
   # Send the crypto price directly
   if message.content.lower() in db.keys():
     await message.channel.send(f'The current price of {message.content} is: ${getCrypocurrencyPrices(message.content.lower())} USD')
@@ -174,4 +179,6 @@ async def on_message(message):
     await message.channel.send(f'Started detecting price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
     await detectPriceAlert(db["detect crypto"], db["detect price"])
 
+  await client.process_commands(message)
+    
 client.run(BOT_TOKEN)
