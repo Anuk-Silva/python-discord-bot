@@ -140,7 +140,7 @@ async def on_message(message):
     
   # Send the crypto price directly
   if message.content.lower() in db.keys():
-    await message.channel.send(f'The current price of {message.content} is: {getCrypocurrencyPrices(message.content.lower())} USD')
+    await message.channel.send(f'The current price of {message.content} is: ${getCrypocurrencyPrices(message.content.lower())} USD')
 
   # List all the available cryptocurrencies
   if message.content.startswith('$list'):
@@ -174,5 +174,5 @@ async def on_message(message):
   if message.content.startswith('$start'):
     await message.channel.send(f'Started detecting price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
     await detectPriceAlert(db["detect crypto"], db["detect price"])
-      
+
 client.run(BOT_TOKEN)
