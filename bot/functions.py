@@ -49,6 +49,19 @@ def getMarketCapOfCryptocurrencyNZD(crypto):
     return db[crypto]
   else:
     return None
+def getMarketCapOfCryptocurrencyUSD(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
+  usdMCR = requests.get(url=URL)
+  dataMCUSD = usdMCR.json()
+
+ # Storing crypto dataNZD such as market cap into the replit db
+  for i in range(len(dataMCUSD)): # Loop through the crypto dataNZD
+    db[dataMCUSD[i]['id']] = dataMCUSD[i]['market_cap'] # Storing the value to be bitcoin's current market cap value
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
 
 def getImageOfCryptocurrencyNZD(crypto):
   URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'

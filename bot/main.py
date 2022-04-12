@@ -2,7 +2,7 @@ import discord
 from replit import db
 from threading import Timer
 from keep_running import keep_running
-from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency
+from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD
 
 # Send a discord notification to a channel
 async def sendMessage(message):
@@ -100,6 +100,12 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         # await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
 
+    if(command == prefix + "mc"):
+      marketCapToBeChecked = message.content.split('!mc ',1)[1].lower()
+      print(marketCapToBeChecked)
+      if (marketCapToBeChecked.lower() in db.keys()):
+        await message.channel.send(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyUSD(marketCapToBeChecked.lower())} USD')
+        
     if(command == prefix + "mcnz"):
       marketCapToBeChecked = message.content.split('!mcnz ',1)[1].lower()
       print(marketCapToBeChecked)
@@ -199,5 +205,6 @@ async def on_message(message):
     await detectPriceAlert(db["detect crypto"],db["detect price"])
 
 keep_running()
+
 
 client.run(BOT_TOKEN)
