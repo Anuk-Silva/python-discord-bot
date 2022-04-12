@@ -3,6 +3,9 @@ import requests
 from replit import db
 from threading import Timer
 from keep_running import keep_running
+from discord.ext import commands
+
+
 
 # Check whether or not the price targets input by the user are valid integers
 def check(goalsForPrice):
@@ -156,8 +159,6 @@ async def detectPriceAlert(crypto,priceTargets):
   Timer(5.0, await detectPriceAlert(crypto,priceTargets)).start() 
   print("--Finished--")
 
-
-
 # Creating an instance of the discord client
 client = discord.Client()
 
@@ -207,6 +208,17 @@ async def on_message(message):
       print(imageToBeRetrieved)
       if (imageToBeRetrieved.lower() in db.keys()):
         await message.channel.send(getImageOfCryptocurrencyNZD(imageToBeRetrieved.lower()))
+    if(command == prefix + "creator"):
+      embed=discord.Embed(
+      title="About the developer",
+      url="https://github.com/Anuk-Silva", 
+      description= "Hi there, My name is Anuk. I built this bot on python and this bot basically tracks and monitors the prices of various cryptocurrencies. Use !help to view a list of commands you may use :)",
+    )
+      embed.set_footer(text = "this is the footer")
+      embed.set_image(url ='https://assets.coingecko.com/coins/images/6799/large/BSV.png?1558947902%27,')
+      embed.set_thumbnail(url='https://avatars.githubusercontent.com/u/83688599?v=4')
+
+      await message.channel.send(embed=embed)
 
   # Send the crypto price directly
   #if message.content.lower() in db.keys():
@@ -244,7 +256,6 @@ async def on_message(message):
   if message.content.startswith('!start'):
     await message.channel.send(f'Started detecting price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
     await detectPriceAlert(db["detect crypto"],db["detect price"])
-
 
 keep_running()
 
