@@ -64,6 +64,11 @@ def getImageOfCryptocurrencyNZD(crypto):
   else:
     return None
 
+def get24HRChangeOfCryptocurrency(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
+  dailyChange = requests.get(url=URL)
+  dailyChangeData = dailyChange.json()
+
 # This function checks if a cryptocurrency is supported by this bot
 def isThisCryptoTracked(crypto):
   if crypto in db.keys():

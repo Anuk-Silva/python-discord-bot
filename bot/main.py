@@ -2,7 +2,7 @@ import discord
 from replit import db
 from threading import Timer
 from keep_running import keep_running
-from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder
+from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency
 
 # Send a discord notification to a channel
 async def sendMessage(message):
@@ -93,7 +93,7 @@ async def on_message(message):
         thumbnailImage = getImageOfCryptocurrencyNZD(cryptoToBePriced)
 
         embed=discord.Embed(
-          title=cryptoToBePriced.capitalize(),
+          title=cryptoToBePriced.capitalize() + "Price",
           url="https://www.coingecko.com", 
           description= (f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD'))
         embed.set_thumbnail(url=thumbnailImage)
@@ -121,6 +121,12 @@ async def on_message(message):
       embed.set_thumbnail(url='https://avatars.githubusercontent.com/u/83688599?v=4')
 
       await message.channel.send(embed=embed)
+
+    if(command == prefix + "24hr"):
+      coinDailyDataToGet = message.content.split('!24hr ',1)[1].lower()
+      print(coinDailyDataToGet)
+      if (coinDailyDataToGet.lower() in db.keys()):
+        await message.channel.send(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
 
   # Send the crypto price directly
   #if message.content.lower() in db.keys():
