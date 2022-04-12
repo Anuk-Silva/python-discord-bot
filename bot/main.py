@@ -1,114 +1,8 @@
 import discord
-import requests
 from replit import db
 from threading import Timer
 from keep_running import keep_running
-from discord.ext import commands
-
-
-
-# Check whether or not the price targets input by the user are valid integers
-def check(goalsForPrice):
-  try:
-    return all(isinstance(int(x),int) for x in goalsForPrice)
-  except:
-    return False
-
-# Getting the data of cryptocurrencies
-def getPricesOfCryptocurrency(crypto):
-  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
-  usdR = requests.get(url=URL)
-  dataUSD = usdR.json()
-
-  for i in range(len(dataUSD)): # Loop through the crypto dataNZD
-    db[dataUSD[i]['id']] = dataUSD[i]['current_price'] # Storing the value to be bitcoin's current price
-
-  if crypto in db.keys():
-    return db[crypto]
-  else:
-    return None
-
-def getPricesOfCryptocurrencyNZD(crypto):
-  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
-  nzdR = requests.get(url=URL)
-  dataNZD = nzdR.json()
-  print(dataNZD)
-
- # Storing crypto dataNZD such as prices into the replit db
-  for i in range(len(dataNZD)): # Loop through the crypto dataNZD
-    db[dataNZD[i]['id']] = dataNZD[i]['current_price'] # Storing the value to be bitcoin's current price in NZD
-
-  if crypto in db.keys():
-    return db[crypto]
-  else:
-    return None
-
-def getMarketCapOfCryptocurrencyNZD(crypto):
-  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
-  nzdMCR = requests.get(url=URL)
-  dataMCNZD = nzdMCR.json()
-
- # Storing crypto dataNZD such as market cap into the replit db
-  for i in range(len(dataMCNZD)): # Loop through the crypto dataNZD
-    db[dataMCNZD[i]['id']] = dataMCNZD[i]['market_cap'] # Storing the value to be bitcoin's current market cap value
-
-  if crypto in db.keys():
-    return db[crypto]
-  else:
-    return None
-
-def getImageOfCryptocurrencyNZD(crypto):
-  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
-  nzdImageR = requests.get(url=URL)
-  dataImageNZD = nzdImageR.json()
-
- # Storing crypto dataNZD such as market cap into the replit db
-  for i in range(len(dataImageNZD)): # Loop through the crypto dataNZD
-    db[dataImageNZD[i]['id']] = dataImageNZD[i]['image'] # Storing the value to be bitcoin's current market cap value
-
-  if crypto in db.keys():
-    return db[crypto]
-  else:
-    return None
-
-# This function checks if a cryptocurrency is supported by this bot
-def isThisCryptoTracked(crypto):
-  if crypto in db.keys():
-    return "This cryptocurrency is supported by the Crypto Price-Info Bot!"
-  else:
-    return "Unfortunately, this cryptocurrency is not supported by the Crypto Price-Info Bot at the moment!"
-
-def checkPriceActivity(startPrice,endPrice,priceTargets):
-    if startPrice < endPrice:
-        return normal_alert(startPrice,endPrice,priceTargets)
-    elif startPrice == endPrice:
-        return []
-    else:
-        return reverse_alert(startPrice,endPrice,priceTargets)
-        
-def reverse_alert(startPrice,endPrice,priceTargets):
-    noti = []
-    priceTargets = priceTargets[::-1]
-    for priceTarget in priceTargets:
-        if endPrice <= priceTarget:
-            noti.append(priceTarget)
-        else:
-            continue
-    return noti
- 
-def normal_alert(startPrice,endPrice,priceTargets):
-    noti = []
-    for priceTarget in priceTargets:
-        if priceTarget <= endPrice:
-            noti.append(priceTarget)
-        else:
-            continue
-    return noti
-
-def checkTwoListOrder(list1,list2):
-    sorted_elements_1 = [list1[index] <= list1[index+1] for index in range(len(list1)-1)]
-    sorted_elements_2 = [list2[index] <= list2[index+1] for index in range(len(list2)-1)]
-    return all(sorted_elements_1) and all(sorted_elements_2)
+from commands import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder
 
 # Send a discord notification to a channel
 async def sendMessage(message):
@@ -195,7 +89,16 @@ async def on_message(message):
       cryptoToBePriced = message.content.split('!pricenz ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
-        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
+
+        thumbnailImage = getImageOfCryptocurrencyNZD(cryptoToBePriced)
+
+        embed=discord.Embed(
+          title=cryptoToBePriced.capitalize(),
+          url="https://www.coingecko.com", 
+          description= (f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD'))
+        embed.set_thumbnail(url=thumbnailImage)
+        await message.channel.send(embed=embed)
+        # await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
 
     if(command == prefix + "mcnz"):
       marketCapToBeChecked = message.content.split('!mcnz ',1)[1].lower()
@@ -214,7 +117,6 @@ async def on_message(message):
       url="https://github.com/Anuk-Silva", 
       description= "Hi there, My name is Anuk. I built this bot on python and this bot basically tracks and monitors the prices of various cryptocurrencies. Use !help to view a list of commands you may use :)",
     )
-      embed.set_footer(text = "this is the footer")
       embed.set_image(url ='https://assets.coingecko.com/coins/images/6799/large/BSV.png?1558947902%27,')
       embed.set_thumbnail(url='https://avatars.githubusercontent.com/u/83688599?v=4')
 
