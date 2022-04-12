@@ -2,6 +2,7 @@ import discord
 import requests
 from replit import db
 from threading import Timer
+from keep_running import keep_running
 
 # Check whether or not the price targets input by the user are valid integers
 def check(goalsForPrice):
@@ -28,9 +29,9 @@ def getPricesOfCryptocurrency(crypto):
 # This function checks if a cryptocurrency is supported by this bot
 def isThisCryptoTracked(crypto):
   if crypto in db.keys():
-    return True
+    return "This cryptocurrency is supported by the Crypto Price-Info Bot!"
   else:
-    return False
+    return "Unfortunately, this cryptocurrency is not supported by the Crypto Price-Info Bot at the moment!"
 
 def checkPriceActivity(startPrice,endPrice,priceTargets):
     if startPrice < endPrice:
@@ -82,19 +83,19 @@ async def detectPriceAlert(crypto,priceTargets):
               if db['hitPriceTarget'] < current_price:
                   if checkTwoListOrder(normal_alert(db['hitPriceTarget'],current_price, priceTargets),db['noti']):
                     for priceTarget in list(set(normal_alert(db["hitPriceTarget"],current_price, priceTargets)) - set(db["noti"])):
-                        await sendMessage(f'The price of {crypto} has just passed {priceTarget} USD. The current price is: {current_price} USD.')
+                        await sendMessage(f'The price of {crypto} has just passed ${priceTarget} USD. The current price is: {current_price} USD.')
                   else:
-                    for priceTarget in list(set(normal_alert(db["hitPriceTarget"],current_price)) - set(db["noti"])):
-                      await sendMessage(f'The price of {crypto} has just passed {priceTarget} USD. The current price is: {current_price} USD.')
+                    for priceTarget in list(set(normal_alert(db["hitPriceTarget"],current_price, priceTargets)) - set(db["noti"])):
+                      await sendMessage(f'The price of {crypto} has just passed ${priceTarget} USD. The current price is: {current_price} USD.')
                   
               # When the value is decreasing: 
               elif db['hitPriceTarget'] >= current_price:
                   if checkTwoListOrder(reverse_alert(db['hitPriceTarget'],current_price,priceTargets),db["noti"]):
                     for priceTarget in list(set(db["noti"]) - set(reverse_alert(db["hitPriceTarget"],current_price,priceTargets))):
-                      await sendMessage(f'The price of {crypto} has just fallen below {priceTarget} USD. The current price is: {current_price} USD.')
+                      await sendMessage(f'The price of {crypto} has just fallen below ${priceTarget} USD. The current price is: {current_price} USD.')
                   else:
                     for priceTarget in list(set(db["noti"]) - set(reverse_alert(db["hitPriceTarget"],current_price,priceTargets))):
-                      await sendMessage(f'The price of {crypto} has just fallen below {priceTarget} USD. The current price is: {current_price} USD.')
+                      await sendMessage(f'The price of {crypto} has just fallen below ${priceTarget} USD. The current price is: {current_price} USD.')
               else:
                   pass
   
@@ -168,10 +169,12 @@ async def on_message(message):
     else:
       await message.channel.send(f'Unsuccessful setting of price alerts. Please try again.')
 
-  if message.content.startswith('$start'):
+  if message.content.startswith('!start'):
     await message.channel.send(f'Started detecting price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
     await detectPriceAlert(db["detect crypto"],db["detect price"])
 
+
+keep_running()
 
 
 client.run(BOT_TOKEN)
