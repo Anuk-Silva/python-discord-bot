@@ -14,12 +14,25 @@ def check(goalsForPrice):
 # Getting the data of cryptocurrencies
 def getPricesOfCryptocurrency(crypto):
   URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
-  r = requests.get(url=URL)
-  data = r.json()
+  usdR = requests.get(url=URL)
+  dataUSD = usdR.json()
 
- # Storing crypto data such as prices into the replit db
-  for i in range(len(data)): # Loop through the crypto data
-    db[data[i]['id']] = data[i]['current_price'] # Storing the value to be bitcoin's current price
+  for i in range(len(dataUSD)): # Loop through the crypto dataNZD
+    db[dataUSD[i]['id']] = dataUSD[i]['current_price'] # Storing the value to be bitcoin's current price
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
+
+def getPricesOfCryptocurrencyNZD(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
+  nzdR = requests.get(url=URL)
+  dataNZD = nzdR.json()
+
+ # Storing crypto dataNZD such as prices into the replit db
+  for i in range(len(dataNZD)): # Loop through the crypto dataNZD
+    db[dataNZD[i]['id']] = dataNZD[i]['current_price'] # Storing the value to be bitcoin's current price
 
   if crypto in db.keys():
     return db[crypto]
@@ -136,9 +149,27 @@ async def on_message(message):
   if message.author == client.user:
     return
 
+  prefix = "!"
+  if (message.content[0] == prefix):
+    command = message.content.split(" ")[0]
+
+    print(command)
+  
+    if(command == prefix + "price"):
+      cryptoToBePriced = message.content.split('!price ',1)[1].lower()
+      print(cryptoToBePriced)
+      if (cryptoToBePriced.lower() in db.keys()):
+        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrency(cryptoToBePriced.lower())} USD')
+
+    if(command == prefix + "pricenz"):
+      cryptoToBePriced = message.content.split('!pricenz ',1)[1].lower()
+      print(cryptoToBePriced)
+      if (cryptoToBePriced.lower() in db.keys()):
+        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
+
   # Send the crypto price directly
-  if message.content.lower() in db.keys():
-    await message.channel.send(f'The current price of {message.content} is: ${getPricesOfCryptocurrency(message.content.lower())} USD')
+  #if message.content.lower() in db.keys():
+  #  await message.channel.send(f'The current price of {message.content} is:   ${getPricesOfCryptocurrency(message.content.lower())} USD')
 
   # List all the available cryptocurrencies
   if message.content.startswith('!list'):
@@ -175,6 +206,7 @@ async def on_message(message):
 
 
 keep_running()
+
 
 
 client.run(BOT_TOKEN)
