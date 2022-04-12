@@ -2,7 +2,7 @@ import discord
 from replit import db
 from threading import Timer
 from keep_running import keep_running
-from commands import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder
+from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder
 
 # Send a discord notification to a channel
 async def sendMessage(message):
