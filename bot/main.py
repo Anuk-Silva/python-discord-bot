@@ -86,7 +86,7 @@ async def sendMessage(message):
 async def detectPriceAlert(crypto,priceTargets):
   current_price = getPricesOfCryptocurrency(crypto)
 
-  if db['hitPriceTarget'] not in range(min(current_price,db['hitPriceTarget']),max(current_price,db['hitPriceTarget'])+1) and min(priceTargets) <= current_price <= max(priceTargets):
+  if db['hitPriceTarget'] not in range(min(current_price,db['hitPriceTarget']),max(current_price,db['hitPriceTarget'])+ 1.00 and min(priceTargets) <= current_price <= max(priceTargets)):
         db['hitPriceTarget'] = 0
   else:
       # compute noti
@@ -206,7 +206,5 @@ async def on_message(message):
 
 
 keep_running()
-
-
 
 client.run(BOT_TOKEN)
