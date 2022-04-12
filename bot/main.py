@@ -111,6 +111,7 @@ async def on_message(message):
       print(imageToBeRetrieved)
       if (imageToBeRetrieved.lower() in db.keys()):
         await message.channel.send(getImageOfCryptocurrencyNZD(imageToBeRetrieved.lower()))
+        
     if(command == prefix + "creator"):
       embed=discord.Embed(
       title="About the developer",
@@ -124,9 +125,41 @@ async def on_message(message):
 
     if(command == prefix + "24hr"):
       coinDailyDataToGet = message.content.split('!24hr ',1)[1].lower()
-      print(coinDailyDataToGet)
       if (coinDailyDataToGet.lower() in db.keys()):
-        await message.channel.send(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
+        thumbnailImage = getImageOfCryptocurrencyNZD(coinDailyDataToGet)
+        print(coinDailyDataToGet)
+        priceChange = str(get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower()))
+        if priceChange.startswith('-'):
+          print(priceChange)
+          # await message.channel.send(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
+          embed=discord.Embed(
+          color=0xe74c3c,
+          title="24 Hour Price Change of " +coinDailyDataToGet.capitalize(),
+          url="https://www.coingecko.com", 
+          description= (f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
+        )
+          embed.set_thumbnail(url=thumbnailImage)
+
+          await message.channel.send(embed=embed)
+
+    if(command == prefix + "help"):
+      embed=discord.Embed(
+      color=0xe74c3c,
+      title="Crypto Price-Info Bot Help Section",
+      description= (f' Below are some useful commands to utilise this bot')
+    )
+      embed.add_field(name="!support <coin>", value="Checks if the coin is supported by the Bot", inline = False)
+      embed.add_field(name="!list", value="Provides a list of coins which is supported and tracked by the Bot", inline = False)
+      embed.add_field(name="!price <coin>", value="Fetch the current price of a coin in USD", inline = False)
+      embed.add_field(name="!pricenz <coin>", value="Fetch the current price of a coin in NZD", inline = False)
+      embed.add_field(name="!24hr <coin>", value="Fetch the change in price from the last 24 hours in a percentage format", inline = False)
+      embed.add_field(name="!mcnz <coin>", value="Fetch the current value of the coin's Market Cap in NZD", inline = False)
+      embed.add_field(name="!set <coin> [pricetargets]", value="Sets a range of price targets for a particular coin. The Bot will notify if a price target has been reached and/or drops below a price target. Use comma to separate each different price target", inline = False)
+      embed.add_field(name="!start", value="The Bot will start monitoring the price activity of the coin and notify if any specified price target has been reached", inline = False)
+      embed.set_image(url ='https://datafloq.com/wp-content/uploads/2021/12/blog_pictures2FCryptocurrency.jpeg'),
+      embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
+      await message.channel.send(embed=embed)
+          
 
   # Send the crypto price directly
   #if message.content.lower() in db.keys():

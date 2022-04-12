@@ -69,6 +69,15 @@ def get24HRChangeOfCryptocurrency(crypto):
   dailyChange = requests.get(url=URL)
   dailyChangeData = dailyChange.json()
 
+ # Storing crypto dataNZD such as prices into the replit db
+  for i in range(len(dailyChangeData)): # Loop through the crypto dataNZD
+    db[dailyChangeData[i]['id']] = dailyChangeData[i]['market_cap_change_percentage_24h'] # Storing the value to be bitcoin's current price in NZD
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
+
 # This function checks if a cryptocurrency is supported by this bot
 def isThisCryptoTracked(crypto):
   if crypto in db.keys():
