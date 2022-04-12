@@ -32,7 +32,21 @@ def getPricesOfCryptocurrencyNZD(crypto):
 
  # Storing crypto dataNZD such as prices into the replit db
   for i in range(len(dataNZD)): # Loop through the crypto dataNZD
-    db[dataNZD[i]['id']] = dataNZD[i]['current_price'] # Storing the value to be bitcoin's current price
+    db[dataNZD[i]['id']] = dataNZD[i]['current_price'] # Storing the value to be bitcoin's current price in NZD
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
+
+def getMarketCapOfCryptocurrencyNZD(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
+  nzdMCR = requests.get(url=URL)
+  dataMCNZD = nzdMCR.json()
+
+ # Storing crypto dataNZD such as market cap into the replit db
+  for i in range(len(dataMCNZD)): # Loop through the crypto dataNZD
+    db[dataMCNZD[i]['id']] = dataMCNZD[i]['market_cap'] # Storing the value to be bitcoin's current market cap value
 
   if crypto in db.keys():
     return db[crypto]
@@ -166,6 +180,12 @@ async def on_message(message):
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
         await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
+
+    if(command == prefix + "mcnz"):
+      marketCapToBeChecked = message.content.split('!mcnz ',1)[1].lower()
+      print(marketCapToBeChecked)
+      if (marketCapToBeChecked.lower() in db.keys()):
+        await message.channel.send(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyNZD(marketCapToBeChecked.lower())} NZD')
 
   # Send the crypto price directly
   #if message.content.lower() in db.keys():
