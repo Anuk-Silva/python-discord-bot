@@ -2,7 +2,9 @@ import discord
 from replit import db
 from threading import Timer
 from keep_running import keep_running
-from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrency, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD
+from discord.ext import commands
+from functions import check, getPricesOfCryptocurrencyUSD, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrency, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD, get24HRChangeofCryptocurrencyHighNZD, get24HRChangeofCryptocurrencyLowNZD
+
 
 # Send a discord notification to a channel
 async def sendMessage(message):
@@ -10,7 +12,7 @@ async def sendMessage(message):
 
 # Detecting for price alerts
 async def detectPriceAlert(crypto,priceTargets):
-  current_price = getPricesOfCryptocurrency(crypto)
+  current_price = getPricesOfCryptocurrencyUSD(crypto)
 
   if db['hitPriceTarget'] not in range(min(current_price,db['hitPriceTarget']),max(current_price,db['hitPriceTarget'])+ 1.00 and min(priceTargets) <= current_price <= max(priceTargets)):
         db['hitPriceTarget'] = 0
@@ -60,12 +62,23 @@ client = discord.Client()
 async def on_ready():
   print(f'You have logged in as {client}')
   await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
-  channel = discord.utils.get(client.get_all_channels(),name='general')
+  for server in client.guilds:# guild stands for server
+    requiredChannel = discord.utils.get(server.channels, name = 'general')
+    await requiredChannel.send("The Crypto Price-Info Bot is now online!")
+        #for channel in guild.channels:
+          #if channel == "general":
+            #channel.send('The Crypto Price-Info Bot is now online!')
+            #channel = discord.utils.get(client.get_all_channels(),name='general')
+          #channel = discord.utils.get(client.get_all_channels(),name='general')
+            #if isinstance(channel, discord.TextChannel):
+             # await client.get_channel(channel.id(client.get_all_channels(),name='general')).send('The Crypto Price-Info Bot is now online!')
 
   db['hitPriceTarget'] = 0
   db['noti'] = []
 
-  await client.get_channel(channel.id).send('The Crypto Price-Info Bot is now online!')
+  
+              # Check if channel is a text channel
+                
 
 # This is called whenever there is a message put into the chat
 @client.event
@@ -83,7 +96,7 @@ async def on_message(message):
       cryptoToBePriced = message.content.split('!price ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
-        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrency(cryptoToBePriced.lower())} USD')
+        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyUSD(cryptoToBePriced.lower())} USD')
         #thumbnailImage = getImageOfCryptocurrency(cryptoToBePriced)
 
         #embed=discord.Embed(
@@ -138,24 +151,18 @@ async def on_message(message):
 
       await message.channel.send(embed=embed)
 
-    if(command == prefix + "24hr"):
+    if(command == prefix + "24hrnzd"):
       coinDailyDataToGet = message.content.split('!24hr ',1)[1].lower()
       if (coinDailyDataToGet.lower() in db.keys()):
-        thumbnailImage = getImageOfCryptocurrency(coinDailyDataToGet)
         print(coinDailyDataToGet)
-        priceChange = str(get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower()))
-        if priceChange.startswith('-'):
-          print(priceChange)
-          # await message.channel.send(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
-          embed=discord.Embed(
-          color=0xe74c3c,
-          title="24 Hour Price Change of " +coinDailyDataToGet.capitalize(),
-          url="https://www.coingecko.com", 
-          description= (f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
-        )
-          embed.set_thumbnail(url=thumbnailImage)
-
-          await message.channel.send(embed=embed)
+        priceChangePercentage = str(get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower()))
+        print(priceChangePercentage)
+        priceChangeHighNZD = str(get24HRChangeofCryptocurrencyHighNZD(coinDailyDataToGet.lower()))
+        print(priceChangeHighNZD)
+        await message.channel.send(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
+        priceChangeLowNZD = str(get24HRChangeofCryptocurrencyLowNZD(coinDailyDataToGet.lower()))
+        print(priceChangeLowNZD)
+          
 
     if(command == prefix + "help"):
       embed=discord.Embed(
@@ -187,7 +194,7 @@ async def on_message(message):
           title="About " +cryptoAboutToBeChecked.capitalize(),
           description= (f'About {cryptoAboutToBeChecked.capitalize()} and other related data!')
         )
-        embed.add_field(name="Current Price in USD", value=f'The current value of {cryptoAboutToBeChecked}s price is: ${getPricesOfCryptocurrency(cryptoAboutToBeChecked.lower())} USD', inline = False)
+        embed.add_field(name="Current Price in USD", value=f'The current value of {cryptoAboutToBeChecked}s price is: ${getPricesOfCryptocurrencyUSD(cryptoAboutToBeChecked.lower())} USD', inline = False)
         embed.add_field(name="Current Price in NZD", value=f'The current value of {cryptoAboutToBeChecked}s price is: ${getPricesOfCryptocurrencyNZD(cryptoAboutToBeChecked.lower())} NZD', inline = False)
         embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Market Cap value in USD is ', value=f'${getMarketCapOfCryptocurrencyUSD(cryptoAboutToBeChecked.lower())}', inline = False)
         embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Market Cap value in NZD is ', value=f'${getMarketCapOfCryptocurrencyNZD(cryptoAboutToBeChecked.lower())}', inline = False)
@@ -198,7 +205,7 @@ async def on_message(message):
 
   # Send the crypto price directly
   #if message.content.lower() in db.keys():
-  #  await message.channel.send(f'The current price of {message.content} is:   ${getPricesOfCryptocurrency(message.content.lower())} USD')
+  #  await message.channel.send(f'The current price of {message.content} is:   ${getPricesOfCryptocurrencyUSD(message.content.lower())} USD')
 
   # List all the available cryptocurrencies
   if message.content.startswith('!list'):
@@ -234,7 +241,5 @@ async def on_message(message):
     await detectPriceAlert(db["detect crypto"],db["detect price"])
 
 keep_running()
-
-
 
 client.run(BOT_TOKEN)
