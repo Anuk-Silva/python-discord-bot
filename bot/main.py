@@ -63,23 +63,12 @@ async def on_ready():
   print(f'You have logged in as {client}')
   await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
   for server in client.guilds:# guild stands for server
-    requiredChannel = discord.utils.get(server.channels, name = 'general')
+    requiredChannel = discord.utils.get(server.channels, name = 'cryptobot')
     await requiredChannel.send("The Crypto Price-Info Bot is now online!")
-        #for channel in guild.channels:
-          #if channel == "general":
-            #channel.send('The Crypto Price-Info Bot is now online!')
-            #channel = discord.utils.get(client.get_all_channels(),name='general')
-          #channel = discord.utils.get(client.get_all_channels(),name='general')
-            #if isinstance(channel, discord.TextChannel):
-             # await client.get_channel(channel.id(client.get_all_channels(),name='general')).send('The Crypto Price-Info Bot is now online!')
 
   db['hitPriceTarget'] = 0
   db['noti'] = []
-
-  
-              # Check if channel is a text channel
                 
-
 # This is called whenever there is a message put into the chat
 @client.event
 async def on_message(message):
@@ -97,30 +86,12 @@ async def on_message(message):
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
         await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyUSD(cryptoToBePriced.lower())} USD')
-        #thumbnailImage = getImageOfCryptocurrency(cryptoToBePriced)
-
-        #embed=discord.Embed(
-          #title=cryptoToBePriced.capitalize() + " Price",
-          #url="https://www.coingecko.com", 
-          #description= (f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD'))
-        #embed.set_thumbnail(url=thumbnailImage)
-        #await message.channel.send(embed=embed)
 
     if(command == prefix + "pricenz"):
       cryptoToBePriced = message.content.split('!pricenz ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
         await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
-
-        #thumbnailImage = getImageOfCryptocurrency(cryptoToBePriced)
-
-        #embed=discord.Embed(
-          #title=cryptoToBePriced.capitalize() + " Price",
-          #url="https://www.coingecko.com", 
-          #description= (f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD'))
-        #embed.set_thumbnail(url=thumbnailImage)
-        #await message.channel.send(embed=embed)
-        # await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
 
     if(command == prefix + "mc"):
       marketCapToBeChecked = message.content.split('!mc ',1)[1].lower()
