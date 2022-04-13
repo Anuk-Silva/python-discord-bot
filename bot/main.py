@@ -2,7 +2,7 @@ import discord
 from replit import db
 from threading import Timer
 from keep_running import keep_running
-from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrencyNZD, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD
+from functions import check, getPricesOfCryptocurrency, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrency, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD
 
 # Send a discord notification to a channel
 async def sendMessage(message):
@@ -84,20 +84,29 @@ async def on_message(message):
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
         await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrency(cryptoToBePriced.lower())} USD')
+        #thumbnailImage = getImageOfCryptocurrency(cryptoToBePriced)
+
+        #embed=discord.Embed(
+          #title=cryptoToBePriced.capitalize() + " Price",
+          #url="https://www.coingecko.com", 
+          #description= (f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD'))
+        #embed.set_thumbnail(url=thumbnailImage)
+        #await message.channel.send(embed=embed)
 
     if(command == prefix + "pricenz"):
       cryptoToBePriced = message.content.split('!pricenz ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
+        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
 
-        thumbnailImage = getImageOfCryptocurrencyNZD(cryptoToBePriced)
+        #thumbnailImage = getImageOfCryptocurrency(cryptoToBePriced)
 
-        embed=discord.Embed(
-          title=cryptoToBePriced.capitalize() + "Price",
-          url="https://www.coingecko.com", 
-          description= (f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD'))
-        embed.set_thumbnail(url=thumbnailImage)
-        await message.channel.send(embed=embed)
+        #embed=discord.Embed(
+          #title=cryptoToBePriced.capitalize() + " Price",
+          #url="https://www.coingecko.com", 
+          #description= (f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD'))
+        #embed.set_thumbnail(url=thumbnailImage)
+        #await message.channel.send(embed=embed)
         # await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
 
     if(command == prefix + "mc"):
@@ -116,7 +125,7 @@ async def on_message(message):
       imageToBeRetrieved = message.content.split('!image ',1)[1].lower()
       print(imageToBeRetrieved)
       if (imageToBeRetrieved.lower() in db.keys()):
-        await message.channel.send(getImageOfCryptocurrencyNZD(imageToBeRetrieved.lower()))
+        await message.channel.send(getImageOfCryptocurrency(imageToBeRetrieved.lower()))
         
     if(command == prefix + "creator"):
       embed=discord.Embed(
@@ -132,7 +141,7 @@ async def on_message(message):
     if(command == prefix + "24hr"):
       coinDailyDataToGet = message.content.split('!24hr ',1)[1].lower()
       if (coinDailyDataToGet.lower() in db.keys()):
-        thumbnailImage = getImageOfCryptocurrencyNZD(coinDailyDataToGet)
+        thumbnailImage = getImageOfCryptocurrency(coinDailyDataToGet)
         print(coinDailyDataToGet)
         priceChange = str(get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower()))
         if priceChange.startswith('-'):
@@ -165,7 +174,25 @@ async def on_message(message):
       embed.set_image(url ='https://datafloq.com/wp-content/uploads/2021/12/blog_pictures2FCryptocurrency.jpeg'),
       embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
       await message.channel.send(embed=embed)
-          
+
+    if(command == prefix + "about"):
+      cryptoAboutToBeChecked = message.content.split('!about ',1)[1].lower()
+      print(cryptoAboutToBeChecked)
+      if (cryptoAboutToBeChecked.lower() in db.keys()):
+        coinImage = getImageOfCryptocurrency(cryptoAboutToBeChecked)
+        embed=discord.Embed(
+          color=0xe74c3c,
+          title="About " +cryptoAboutToBeChecked.capitalize(),
+          description= (f'About {cryptoAboutToBeChecked.capitalize()} and other related data!')
+        )
+        embed.add_field(name="Current Price in USD", value=f'The current value of {cryptoAboutToBeChecked}s price is: ${getPricesOfCryptocurrency(cryptoAboutToBeChecked.lower())} USD', inline = False)
+        embed.add_field(name="Current Price in NZD", value=f'The current value of {cryptoAboutToBeChecked}s price is: ${getPricesOfCryptocurrencyNZD(cryptoAboutToBeChecked.lower())} NZD', inline = False)
+        embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Market Cap value in USD is ', value=f'${getMarketCapOfCryptocurrencyUSD(cryptoAboutToBeChecked.lower())}', inline = False)
+        embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Market Cap value in NZD is ', value=f'${getMarketCapOfCryptocurrencyNZD(cryptoAboutToBeChecked.lower())}', inline = False)
+        embed.add_field(name="Price Change in last 24 Hours", value=f'The price change of {cryptoAboutToBeChecked}s in the last 24 hours is: {str(get24HRChangeOfCryptocurrency(cryptoAboutToBeChecked.lower()))}%', inline = False)
+        embed.set_image(url=coinImage)
+        embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
+        await message.channel.send(embed=embed)
 
   # Send the crypto price directly
   #if message.content.lower() in db.keys():

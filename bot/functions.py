@@ -1,6 +1,3 @@
-from replit import db
-import requests
-
 # Check whether or not the price targets input by the user are valid integers
 def check(goalsForPrice):
   try:
@@ -63,14 +60,14 @@ def getMarketCapOfCryptocurrencyUSD(crypto):
   else:
     return None
 
-def getImageOfCryptocurrencyNZD(crypto):
+def getImageOfCryptocurrency(crypto):
   URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
-  nzdImageR = requests.get(url=URL)
-  dataImageNZD = nzdImageR.json()
+  imageR = requests.get(url=URL)
+  dataImage = imageR.json()
 
  # Storing crypto dataNZD such as market cap into the replit db
-  for i in range(len(dataImageNZD)): # Loop through the crypto dataNZD
-    db[dataImageNZD[i]['id']] = dataImageNZD[i]['image'] # Storing the value to be bitcoin's current market cap value
+  for i in range(len(dataImage)): # Loop through the crypto dataNZD
+    db[dataImage[i]['id']] = dataImage[i]['image'] # Storing the value to be bitcoin's current market cap value
 
   if crypto in db.keys():
     return db[crypto]
