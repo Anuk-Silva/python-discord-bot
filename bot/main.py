@@ -171,6 +171,8 @@ async def on_message(message):
       embed.add_field(name="!mcnz <coin>", value="Fetch the current value of the coin's Market Cap in NZD", inline = False)
       embed.add_field(name="!set <coin> [pricetargets]", value="Sets a range of price targets for a particular coin. The Bot will notify if a price target has been reached and/or drops below a price target. Use comma to separate each different price target", inline = False)
       embed.add_field(name="!start", value="The Bot will start monitoring the price activity of the coin and notify if any specified price target has been reached", inline = False)
+      embed.add_field(name="!about", value="The Bot will display a list of information related to the coin such as price, market cap and more!", inline = False)
+      embed.add_field(name="!help", value="The Bot will display a list of useful commands which you can use to fetch data of a coin and more!", inline = False)
       embed.set_image(url ='https://datafloq.com/wp-content/uploads/2021/12/blog_pictures2FCryptocurrency.jpeg'),
       embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
       await message.channel.send(embed=embed)
@@ -232,6 +234,7 @@ async def on_message(message):
     await detectPriceAlert(db["detect crypto"],db["detect price"])
 
 keep_running()
+
 
 
 client.run(BOT_TOKEN)
