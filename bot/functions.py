@@ -77,13 +77,39 @@ def getImageOfCryptocurrency(crypto):
   else:
     return None
 
+def get24HRChangeofCryptocurrencyLowUSD(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
+  dailyChangeLowUSD = requests.get(url=URL)
+  dailyChangeLowUSDData = dailyChangeLowUSD.json()
+
+  for i in range(len(dailyChangeLowUSDData)): # Loop through the crypto dataNZD
+    db[dailyChangeLowUSDData[i]['id']] = dailyChangeLowUSDData[i]['low_24h'] # Storing the value of bitcoin's 24 hours lowest price in NZD
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
+
+def get24HRChangeofCryptocurrencyHighUSD(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
+  dailyChangeHighUSD = requests.get(url=URL)
+  dailyChangeHighUSDData = dailyChangeHighUSD.json()
+
+  for i in range(len(dailyChangeHighUSDData)): # Loop through the crypto dataNZD
+    db[dailyChangeHighUSDData[i]['id']] = dailyChangeHighUSDData[i]['high_24h'] # Storing the value of bitcoin's 24 hours highest price in NZD
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
+
 def get24HRChangeofCryptocurrencyLowNZD(crypto):
   URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
-  dailyChangeLow = requests.get(url=URL)
-  dailyChangeLowData = dailyChangeLow.json()
+  dailyChangeLowNZD = requests.get(url=URL)
+  dailyChangeLowNZDData = dailyChangeLowNZD.json()
 
-  for i in range(len(dailyChangeLowData)): # Loop through the crypto dataNZD
-    db[dailyChangeLowData[i]['id']] = dailyChangeLowData[i]['low_24h'] # Storing the value of bitcoin's 24 hours lowest price in NZD
+  for i in range(len(dailyChangeLowNZDData)): # Loop through the crypto dataNZD
+    db[dailyChangeLowNZDData[i]['id']] = dailyChangeLowNZDData[i]['low_24h'] # Storing the value of bitcoin's 24 hours lowest price in NZD
 
   if crypto in db.keys():
     return db[crypto]
@@ -104,7 +130,7 @@ def get24HRChangeofCryptocurrencyHighNZD(crypto):
     return None
   
 def get24HRChangeOfCryptocurrency(crypto):
-  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
   dailyChange = requests.get(url=URL)
   dailyChangeData = dailyChange.json()
 
