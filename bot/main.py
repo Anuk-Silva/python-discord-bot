@@ -5,7 +5,6 @@ from keep_running import keep_running
 from discord.ext import commands
 from functions import check, getPricesOfCryptocurrencyUSD, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrency, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD, get24HRChangeofCryptocurrencyHighNZD, get24HRChangeofCryptocurrencyLowNZD
 
-
 # Send a discord notification to a channel
 async def sendMessage(message):
   await discord.utils.get(client.get_all_channels(),name='general').send(message)
@@ -85,31 +84,31 @@ async def on_message(message):
       cryptoToBePriced = message.content.split('!price ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
-        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyUSD(cryptoToBePriced.lower())} USD')
+        await message.reply(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyUSD(cryptoToBePriced.lower())} USD')
 
     if(command == prefix + "pricenz"):
       cryptoToBePriced = message.content.split('!pricenz ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
-        await message.channel.send(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
+        await message.reply(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
 
     if(command == prefix + "mc"):
       marketCapToBeChecked = message.content.split('!mc ',1)[1].lower()
       print(marketCapToBeChecked)
       if (marketCapToBeChecked.lower() in db.keys()):
-        await message.channel.send(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyUSD(marketCapToBeChecked.lower())} USD')
+        await message.reply(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyUSD(marketCapToBeChecked.lower())} USD')
         
     if(command == prefix + "mcnz"):
       marketCapToBeChecked = message.content.split('!mcnz ',1)[1].lower()
       print(marketCapToBeChecked)
       if (marketCapToBeChecked.lower() in db.keys()):
-        await message.channel.send(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyNZD(marketCapToBeChecked.lower())} NZD')
+        await message.reply(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyNZD(marketCapToBeChecked.lower())} NZD')
 
     if(command == prefix + "image"):
       imageToBeRetrieved = message.content.split('!image ',1)[1].lower()
       print(imageToBeRetrieved)
       if (imageToBeRetrieved.lower() in db.keys()):
-        await message.channel.send(getImageOfCryptocurrency(imageToBeRetrieved.lower()))
+        await message.reply(getImageOfCryptocurrency(imageToBeRetrieved.lower()))
         
     if(command == prefix + "creator"):
       embed=discord.Embed(
@@ -120,7 +119,19 @@ async def on_message(message):
       embed.set_image(url ='https://assets.coingecko.com/coins/images/6799/large/BSV.png?1558947902%27,')
       embed.set_thumbnail(url='https://avatars.githubusercontent.com/u/83688599?v=4')
 
-      await message.channel.send(embed=embed)
+      await message.reply(embed=embed)
+
+    if(command == prefix + "faq"):
+      embed=discord.Embed(
+      title="Frequently Asked Questions",
+      description= "Here are some frequently asked questions with the answers provided",
+    )
+      embed.set_image(url ='https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
+      embed.set_thumbnail(url='https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
+      embed.add_field(name="Why is the bot not responding?", value="Please check and make sure the bot is online and use !help to see a list of commands and how to use them!", inline = False)
+      embed.add_field(name="Which coins are supported?", value="Please use the !list and !support commands to see which coins are supported", inline = False)
+      
+      await message.reply(embed=embed)
 
     if(command == prefix + "24hrnzd"):
       coinDailyDataToGet = message.content.split('!24hr ',1)[1].lower()
@@ -130,11 +141,10 @@ async def on_message(message):
         print(priceChangePercentage)
         priceChangeHighNZD = str(get24HRChangeofCryptocurrencyHighNZD(coinDailyDataToGet.lower()))
         print(priceChangeHighNZD)
-        await message.channel.send(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
+        await message.reply(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
         priceChangeLowNZD = str(get24HRChangeofCryptocurrencyLowNZD(coinDailyDataToGet.lower()))
         print(priceChangeLowNZD)
           
-
     if(command == prefix + "help"):
       embed=discord.Embed(
       color=0xe74c3c,
@@ -153,7 +163,7 @@ async def on_message(message):
       embed.add_field(name="!help", value="The Bot will display a list of useful commands which you can use to fetch data of a coin and more!", inline = False)
       embed.set_image(url ='https://datafloq.com/wp-content/uploads/2021/12/blog_pictures2FCryptocurrency.jpeg'),
       embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
-      await message.channel.send(embed=embed)
+      await message.reply(embed=embed)
 
     if(command == prefix + "about"):
       cryptoAboutToBeChecked = message.content.split('!about ',1)[1].lower()
@@ -172,21 +182,17 @@ async def on_message(message):
         embed.add_field(name="Price Change in last 24 Hours", value=f'The price change of {cryptoAboutToBeChecked}s in the last 24 hours is: {str(get24HRChangeOfCryptocurrency(cryptoAboutToBeChecked.lower()))}%', inline = False)
         embed.set_image(url=coinImage)
         embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
-        await message.channel.send(embed=embed)
-
-  # Send the crypto price directly
-  #if message.content.lower() in db.keys():
-  #  await message.channel.send(f'The current price of {message.content} is:   ${getPricesOfCryptocurrencyUSD(message.content.lower())} USD')
+        await message.reply(embed=embed)
 
   # List all the available cryptocurrencies
   if message.content.startswith('!list'):
     cryptoSupportedList = [key for key in db.keys()]
-    await message.channel.send(cryptoSupportedList)
+    await message.reply(cryptoSupportedList)
 
   # Check whether or not a cryptocurrency is supported by the bot
   if message.content.startswith('!support '):
     cryptoToBeChecked = message.content.split('!support ',1)[1].lower()
-    await message.channel.send(isThisCryptoTracked(cryptoToBeChecked))
+    await message.reply(isThisCryptoTracked(cryptoToBeChecked))
 
   # Setting multiple price alerts
   if message.content.startswith('!set '):
@@ -202,13 +208,13 @@ async def on_message(message):
       db['detect crypto'] = cryptoConcerned
       db['detect price'] = priceTargets
 
-      await message.channel.send(f'Successfully set price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
+      await message.reply(f'Successfully set price alert for {db["detect crypto"]} at {list(db["detect price"])} USD. Please use !start to start tracking for the price alerts you have just set!')
 
     else:
-      await message.channel.send(f'Unsuccessful setting of price alerts. Please try again.')
+      await message.reply(f'Unsuccessful setting of price alerts. Please try again.')
 
   if message.content.startswith('!start'):
-    await message.channel.send(f'Started detecting price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
+    await message.reply(f'Started detecting price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
     await detectPriceAlert(db["detect crypto"],db["detect price"])
 
 keep_running()

@@ -1,3 +1,6 @@
+from replit import db
+import requests
+
 # Check whether or not the price targets input by the user are valid integers
 def check(goalsForPrice):
   try:
@@ -6,7 +9,7 @@ def check(goalsForPrice):
     return False
 
 # Getting the data of cryptocurrencies
-def getPricesOfCryptocurrency(crypto):
+def getPricesOfCryptocurrencyUSD(crypto):
   URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
   usdR = requests.get(url=URL)
   dataUSD = usdR.json()
@@ -74,15 +77,39 @@ def getImageOfCryptocurrency(crypto):
   else:
     return None
 
+def get24HRChangeofCryptocurrencyLowNZD(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
+  dailyChangeLow = requests.get(url=URL)
+  dailyChangeLowData = dailyChangeLow.json()
+
+  for i in range(len(dailyChangeLowData)): # Loop through the crypto dataNZD
+    db[dailyChangeLowData[i]['id']] = dailyChangeLowData[i]['low_24h'] # Storing the value of bitcoin's 24 hours lowest price in NZD
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
+
+def get24HRChangeofCryptocurrencyHighNZD(crypto):
+  URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
+  dailyChangeHighNZD = requests.get(url=URL)
+  dailyChangeHighNZDData = dailyChangeHighNZD.json()
+
+  for i in range(len(dailyChangeHighNZDData)): # Loop through the crypto dataNZD
+    db[dailyChangeHighNZDData[i]['id']] = dailyChangeHighNZDData[i]['high_24h'] # Storing the value of bitcoin's 24 hours highest price in NZD
+
+  if crypto in db.keys():
+    return db[crypto]
+  else:
+    return None
+  
 def get24HRChangeOfCryptocurrency(crypto):
   URL ='https://api.coingecko.com/api/v3/coins/markets?vs_currency=nzd'
   dailyChange = requests.get(url=URL)
   dailyChangeData = dailyChange.json()
 
- # Storing crypto dataNZD such as prices into the replit db
   for i in range(len(dailyChangeData)): # Loop through the crypto dataNZD
-    db[dailyChangeData[i]['id']] = dailyChangeData[i]['market_cap_change_percentage_24h'] # Storing the value to be bitcoin's current price in NZD
-
+    db[dailyChangeData[i]['id']] = dailyChangeData[i]['price_change_percentage_24h'] # Storing the value of bitcoin's current price change in the last 24 hours in percentage value
   if crypto in db.keys():
     return db[crypto]
   else:
