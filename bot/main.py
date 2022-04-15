@@ -6,11 +6,14 @@ from discord.ext import commands
 from functions import check, getPricesOfCryptocurrencyUSD, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrency, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD, get24HRChangeofCryptocurrencyHighNZD, get24HRChangeofCryptocurrencyLowNZD
 
 # Send a discord notification to a channel
-async def sendMessage(message):
-  await discord.utils.get(client.get_all_channels(),name='general').send(message)
+#async def sendMessage(message):
+ # print(message)
+  #await message.channel.reply(message)
+  #await message.reply(message)
+ # await discord.utils.get(client.get_all_channels(),name='general').send(message)
 
 # Detecting for price alerts
-async def detectPriceAlert(crypto,priceTargets):
+async def detectPriceAlert(crypto,priceTargets, channelUsedID):
   current_price = getPricesOfCryptocurrencyUSD(crypto)
 
   if db['hitPriceTarget'] not in range(min(current_price,db['hitPriceTarget']),max(current_price,db['hitPriceTarget'])+ 1.00 and min(priceTargets) <= current_price <= max(priceTargets)):
@@ -23,19 +26,19 @@ async def detectPriceAlert(crypto,priceTargets):
               if db['hitPriceTarget'] < current_price:
                   if checkTwoListOrder(normal_alert(db['hitPriceTarget'],current_price, priceTargets),db['noti']):
                     for priceTarget in list(set(normal_alert(db["hitPriceTarget"],current_price, priceTargets)) - set(db["noti"])):
-                        await sendMessage(f'The price of {crypto} has just passed ${priceTarget} USD. The current price is: {current_price} USD.')
+                        await sendMessage(f'The price of {crypto} has just passed ${priceTarget} USD. The current price is: {current_price} USD.', channelUsedID)
                   else:
                     for priceTarget in list(set(normal_alert(db["hitPriceTarget"],current_price, priceTargets)) - set(db["noti"])):
-                      await sendMessage(f'The price of {crypto} has just passed ${priceTarget} USD. The current price is: {current_price} USD.')
+                      await sendMessage(f'The price of {crypto} has just passed ${priceTarget} USD. The current price is: {current_price} USD.', channelUsedID)
                   
               # When the value is decreasing: 
               elif db['hitPriceTarget'] >= current_price:
                   if checkTwoListOrder(reverse_alert(db['hitPriceTarget'],current_price,priceTargets),db["noti"]):
                     for priceTarget in list(set(db["noti"]) - set(reverse_alert(db["hitPriceTarget"],current_price,priceTargets))):
-                      await sendMessage(f'The price of {crypto} has just fallen below ${priceTarget} USD. The current price is: {current_price} USD.')
+                      await sendMessage(f'The price of {crypto} has just fallen below ${priceTarget} USD. The current price is: {current_price} USD.',channelUsedID)
                   else:
                     for priceTarget in list(set(db["noti"]) - set(reverse_alert(db["hitPriceTarget"],current_price,priceTargets))):
-                      await sendMessage(f'The price of {crypto} has just fallen below ${priceTarget} USD. The current price is: {current_price} USD.')
+                      await sendMessage(f'The price of {crypto} has just fallen below ${priceTarget} USD. The current price is: {current_price} USD.',channelUsedID)
               else:
                   pass
   
@@ -51,7 +54,7 @@ async def detectPriceAlert(crypto,priceTargets):
           db['hitPriceTarget'] = 0
 
   # Set a thread which runs and executes the detectPriceAlert function every 5 seconds
-  Timer(5.0, await detectPriceAlert(crypto,priceTargets)).start() 
+  Timer(5.0, await detectPriceAlert(crypto,priceTargets,channelUsedID)).start() 
   print("--Finished--")
 
 # Creating an instance of the discord client
@@ -70,7 +73,31 @@ async def on_ready():
                 
 # This is called whenever there is a message put into the chat
 @client.event
+async def sendMessage(message,channelUsedID):
+  print(message)
+  print("This is the ID of the channel usd", channelUsedID)
+  channel = client.get_channel(channelUsedID)
+
+  await channel.send(message)
+  
+  #await message.reply(message)
+  #await message.channelUsedID.send(message)
+  #channel = discord.utils.get(self.client.get_all_channels(), id=channel_id)
+  #theChannelUsed = message.channel.id
+  #print(theChannelUsed)
+  #print(message)
+  #await message.channel.reply(message)
+  #await message.reply(message)
+  #await discord.utils.get(client.get_all_channels(),name='general').send(message)
+
+@client.event
 async def on_message(message):
+  channelUsdName = message.channel.name
+  print(channelUsdName)
+  
+  channelUsedID = message.channel.id
+  print(channelUsedID)
+  
   if message.author == client.user:
     return
 
@@ -215,7 +242,7 @@ async def on_message(message):
 
   if message.content.startswith('!start'):
     await message.reply(f'Started detecting price alert for {db["detect crypto"]} at {list(db["detect price"])} USD.')
-    await detectPriceAlert(db["detect crypto"],db["detect price"])
+    await detectPriceAlert(db["detect crypto"],db["detect price"], channelUsedID)
 
 keep_running()
 
