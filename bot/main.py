@@ -3,7 +3,7 @@ from replit import db
 from threading import Timer
 from keep_running import keep_running
 from discord.ext import commands
-from functions import check, getPricesOfCryptocurrencyUSD, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrency, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD, get24HRChangeofCryptocurrencyHighNZD, get24HRChangeofCryptocurrencyLowNZD
+from functions import check, getPricesOfCryptocurrencyUSD, getPricesOfCryptocurrencyNZD, getMarketCapOfCryptocurrencyNZD, getImageOfCryptocurrency, isThisCryptoTracked, checkPriceActivity, reverse_alert, normal_alert, checkTwoListOrder, get24HRChangeOfCryptocurrency, getMarketCapOfCryptocurrencyUSD, get24HRChangeofCryptocurrencyHighNZD, get24HRChangeofCryptocurrencyLowNZD, get24HRChangeofCryptocurrencyHighUSD, get24HRChangeofCryptocurrencyLowUSD
 
 # Send a discord notification to a channel
 #async def sendMessage(message):
@@ -11,6 +11,13 @@ from functions import check, getPricesOfCryptocurrencyUSD, getPricesOfCryptocurr
   #await message.channel.reply(message)
   #await message.reply(message)
  # await discord.utils.get(client.get_all_channels(),name='general').send(message)
+
+# This is called whenever there is a message put into the chat
+async def sendMessage(message,channelUsedID):
+  print(message)
+  print("This is the ID of the channel usd", channelUsedID)
+  channel = client.get_channel(channelUsedID)
+  await channel.send(message)
 
 # Detecting for price alerts
 async def detectPriceAlert(crypto,priceTargets, channelUsedID):
@@ -70,25 +77,6 @@ async def on_ready():
 
   db['hitPriceTarget'] = 0
   db['noti'] = []
-                
-# This is called whenever there is a message put into the chat
-@client.event
-async def sendMessage(message,channelUsedID):
-  print(message)
-  print("This is the ID of the channel usd", channelUsedID)
-  channel = client.get_channel(channelUsedID)
-
-  await channel.send(message)
-  
-  #await message.reply(message)
-  #await message.channelUsedID.send(message)
-  #channel = discord.utils.get(self.client.get_all_channels(), id=channel_id)
-  #theChannelUsed = message.channel.id
-  #print(theChannelUsed)
-  #print(message)
-  #await message.channel.reply(message)
-  #await message.reply(message)
-  #await discord.utils.get(client.get_all_channels(),name='general').send(message)
 
 @client.event
 async def on_message(message):
@@ -111,31 +99,39 @@ async def on_message(message):
       cryptoToBePriced = message.content.split('!price ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Fetching Price Data!"))
         await message.reply(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyUSD(cryptoToBePriced.lower())} USD')
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
 
     if(command == prefix + "pricenz"):
       cryptoToBePriced = message.content.split('!pricenz ',1)[1].lower()
       print(cryptoToBePriced)
       if (cryptoToBePriced.lower() in db.keys()):
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Fetching Price Data!"))
         await message.reply(f'The current price of {cryptoToBePriced} is: ${getPricesOfCryptocurrencyNZD(cryptoToBePriced.lower())} NZD')
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
 
     if(command == prefix + "mc"):
       marketCapToBeChecked = message.content.split('!mc ',1)[1].lower()
       print(marketCapToBeChecked)
       if (marketCapToBeChecked.lower() in db.keys()):
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Fetching Market Cap Data!"))
         await message.reply(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyUSD(marketCapToBeChecked.lower())} USD')
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
         
     if(command == prefix + "mcnz"):
       marketCapToBeChecked = message.content.split('!mcnz ',1)[1].lower()
       print(marketCapToBeChecked)
       if (marketCapToBeChecked.lower() in db.keys()):
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Fetching Market Cap Data!"))
         await message.reply(f'The current value of {marketCapToBeChecked}s Market Cap is: ${getMarketCapOfCryptocurrencyNZD(marketCapToBeChecked.lower())} NZD')
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
 
     if(command == prefix + "image"):
       imageToBeRetrieved = message.content.split('!image ',1)[1].lower()
       print(imageToBeRetrieved)
       if (imageToBeRetrieved.lower() in db.keys()):
-        await message.reply(getImageOfCryptocurrency(imageToBeRetrieved.lower()))
+        await message.reply(getImageOfCryptocurrency(imageToBeRetrieved()))
         
     if(command == prefix + "creator"):
       embed=discord.Embed(
@@ -160,17 +156,23 @@ async def on_message(message):
       
       await message.reply(embed=embed)
 
-    if(command == prefix + "24hrnzd"):
-      coinDailyDataToGet = message.content.split('!24hr ',1)[1].lower()
+    if(command == prefix + "24hrusd"):
+      coinDailyDataToGet = message.content.split('!24hrusd ',1)[1].lower()
       if (coinDailyDataToGet.lower() in db.keys()):
-        print(coinDailyDataToGet)
-        priceChangePercentage = str(get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower()))
-        print(priceChangePercentage)
-        priceChangeHighNZD = str(get24HRChangeofCryptocurrencyHighNZD(coinDailyDataToGet.lower()))
-        print(priceChangeHighNZD)
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Fetching 24HR Price Data!"))
         await message.reply(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
-        priceChangeLowNZD = str(get24HRChangeofCryptocurrencyLowNZD(coinDailyDataToGet.lower()))
-        print(priceChangeLowNZD)
+        await message.reply(f'{coinDailyDataToGet.capitalize()} had a high of ${get24HRChangeofCryptocurrencyHighUSD(coinDailyDataToGet.lower())} USD in the last 24 hours')
+        await message.reply(f'{coinDailyDataToGet.capitalize()} had a low of ${get24HRChangeofCryptocurrencyLowUSD(coinDailyDataToGet.lower())} USD in the last 24 hours')
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
+
+    if(command == prefix + "24hrnzd"):
+      coinDailyDataToGet = message.content.split('!24hrnzd ',1)[1].lower()
+      if (coinDailyDataToGet.lower() in db.keys()):
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Fetching 24HR Price Data!"))
+        await message.reply(f'{coinDailyDataToGet.capitalize()} had a {get24HRChangeOfCryptocurrency(coinDailyDataToGet.lower())}% change in the last 24 hours')
+        await message.reply(f'{coinDailyDataToGet.capitalize()} had a high of ${get24HRChangeofCryptocurrencyHighNZD(coinDailyDataToGet.lower())} NZD in the last 24 hours')
+        await message.reply(f'{coinDailyDataToGet.capitalize()} had a low of ${get24HRChangeofCryptocurrencyLowNZD(coinDailyDataToGet.lower())} NZD in the last 24 hours')
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
           
     if(command == prefix + "help"):
       embed=discord.Embed(
@@ -178,16 +180,18 @@ async def on_message(message):
       title="Crypto Price-Info Bot Help Section",
       description= (f' Below are some useful commands to utilise this bot')
     )
-      embed.add_field(name="!support <coin>", value="Checks if the coin is supported by the Bot", inline = False)
       embed.add_field(name="!list", value="Provides a list of coins which is supported and tracked by the Bot", inline = False)
+      embed.add_field(name="!support <coin>", value="Checks if the coin is supported by the Bot", inline = False)
       embed.add_field(name="!price <coin>", value="Fetch the current price of a coin in USD", inline = False)
       embed.add_field(name="!pricenz <coin>", value="Fetch the current price of a coin in NZD", inline = False)
       embed.add_field(name="!24hr <coin>", value="Fetch the change in price from the last 24 hours in a percentage format", inline = False)
+      embed.add_field(name="!mc <coin>", value="Fetch the current value of the coin's Market Cap in USD", inline = False)
       embed.add_field(name="!mcnz <coin>", value="Fetch the current value of the coin's Market Cap in NZD", inline = False)
       embed.add_field(name="!set <coin> [pricetargets]", value="Sets a range of price targets for a particular coin. The Bot will notify if a price target has been reached and/or drops below a price target. Use comma to separate each different price target", inline = False)
       embed.add_field(name="!start", value="The Bot will start monitoring the price activity of the coin and notify if any specified price target has been reached", inline = False)
-      embed.add_field(name="!about", value="The Bot will display a list of information related to the coin such as price, market cap and more!", inline = False)
+      embed.add_field(name="!about <coin>", value="The Bot will display a list of information related to the coin such as price, market cap and more!", inline = False)
       embed.add_field(name="!help", value="The Bot will display a list of useful commands which you can use to fetch data of a coin and more!", inline = False)
+      embed.add_field(name="!creator", value="The Bot will display who made the bot and the creator's relevant details", inline = False)
       embed.set_image(url ='https://datafloq.com/wp-content/uploads/2021/12/blog_pictures2FCryptocurrency.jpeg'),
       embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
       await message.reply(embed=embed)
@@ -196,6 +200,7 @@ async def on_message(message):
       cryptoAboutToBeChecked = message.content.split('!about ',1)[1].lower()
       print(cryptoAboutToBeChecked)
       if (cryptoAboutToBeChecked.lower() in db.keys()):
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'Retrieving {cryptoAboutToBeChecked} Info!'))
         coinImage = getImageOfCryptocurrency(cryptoAboutToBeChecked)
         embed=discord.Embed(
           color=0xe74c3c,
@@ -207,9 +212,20 @@ async def on_message(message):
         embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Market Cap value in USD is ', value=f'${getMarketCapOfCryptocurrencyUSD(cryptoAboutToBeChecked.lower())}', inline = False)
         embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Market Cap value in NZD is ', value=f'${getMarketCapOfCryptocurrencyNZD(cryptoAboutToBeChecked.lower())}', inline = False)
         embed.add_field(name="Price Change in last 24 Hours", value=f'The price change of {cryptoAboutToBeChecked}s in the last 24 hours is: {str(get24HRChangeOfCryptocurrency(cryptoAboutToBeChecked.lower()))}%', inline = False)
+        embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s High in the last 24 hours in USD', value=f'The price high of {cryptoAboutToBeChecked}s in the last 24 hours is: ${str(get24HRChangeofCryptocurrencyHighUSD(cryptoAboutToBeChecked.lower()))} in NZD', inline = False)
+
+        embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Low in the last 24 hours in USD', value=f'The price high of {cryptoAboutToBeChecked}s in the last 24 hours is: ${str(get24HRChangeofCryptocurrencyLowUSD(cryptoAboutToBeChecked.lower()))} in USD', inline = False)
+
+        embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s High in the last 24 hours in NZD', value=f'The price high of {cryptoAboutToBeChecked}s in the last 24 hours is: ${str(get24HRChangeofCryptocurrencyHighNZD(cryptoAboutToBeChecked.lower()))} in NZD', inline = False)
+
+        embed.add_field(name=f'{cryptoAboutToBeChecked.capitalize()}s Low in the last 24 hours in NZD', value=f'The price high of {cryptoAboutToBeChecked}s in the last 24 hours is: ${str(get24HRChangeofCryptocurrencyLowNZD(cryptoAboutToBeChecked.lower()))} in NZD', inline = False)
+        
+        
+        
         embed.set_image(url=coinImage)
         embed.set_thumbnail(url = 'https://gmgfinancial.com/wp-content/uploads/2021/03/Crypto-Big.jpg')
         await message.reply(embed=embed)
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The Crypto Market!"))
 
   # List all the available cryptocurrencies
   if message.content.startswith('!list'):
